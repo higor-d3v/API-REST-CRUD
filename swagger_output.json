@@ -1,0 +1,417 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "CRUD PRODUTOS",
+    "description": "API REST contendo CRUD de produtos bem como cadastro e login de usuários para autenticação em rotas via Bearer Token",
+    "contact": {
+      "email": "hgrprofissional@gmail.com"
+    }
+  },
+  "host": "http://localhost:3000",
+  "basePath": "/v1",
+  "tags": [],
+  "schemes": [
+    "http"
+  ],
+  "consumes": [],
+  "produces": [],
+  "paths": {
+    "/v1/login": {
+      "post": {
+        "summary": "Logar",
+        "tags": ["Login"],
+        "description": "Rota para fazer login de usuário previamente cadastrado.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              },
+              "examples": {
+                "login": {
+                  "value": {
+                    "email": "hgrprofissional@gmail.com",
+                    "senha": "batatinha123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/v1/usuario": {
+      "post": {
+        "summary": "Cadastro de Usuário",
+        "tags": ["Usuários"],
+        "description": "Rota para cadastrar usuário informando os quatro campos obrigatórios.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Users"
+              },
+              "examples": {
+                "usuário": {
+                  "value": {
+                    "nome": "Higor",
+                    "email": "hgrprofissional@gmail.com",
+                    "senha": "batatinha123",
+                    "nome_loja": "h_store"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "get": {
+        "summary": "Obter Usuário",
+        "tags": ["Usuários"],
+        "description": "Rota para obter usuário previamente cadastrado.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "Atualização de Usuário",
+        "tags": ["Usuários"],
+        "description": "Rota para atualizar usuário informando os quatro campos obrigatórios.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Users"
+              },
+              "examples": {
+                "usuário": {
+                  "value": {
+                    "nome": "Higor",
+                    "email": "hgrprofissional@gmail.com",
+                    "senha": "batatinha123",
+                    "nome_loja": "h_store"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/produtos": {
+      "post": {
+        "summary": "Cadastrar Produto",
+        "tags": ["Produtos"],
+        "description": "Rota para cadastrar um produto inserindo os campos obrigatórios.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Products" 
+              },
+              "examples": {
+                "value": {
+                  "nome": "Camisa Preta",
+                  "quantidade": 8,
+                  "categoria": "Camisa",
+                  "preco": 4990,
+                  "imagem": "https://bit.ly/3ctikxq",
+                  "descricao": "Camisa de malha com acabamento fino."
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "Obter Produtos",
+        "tags": ["Produtos"],
+        "description": "Rota para obter todos produtos do usuário logado.",
+        "parameters": [
+          {
+            "name": "categoria",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/produtos/{id}": {
+      "get": {
+        "summary":"Obter Produto",
+        "tags": ["Produtos"],
+        "description": "Rota para obter um produto inserindo o id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary":"Atualizar Produto",
+        "tags": ["Produtos"],
+        "description": "Rota para atualizar um produto inserindo id e campos obrigatórios.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Products" 
+              },
+              "examples": {
+                "value": {
+                  "nome": "Camisa Preta",
+                  "quantidade": 8,
+                  "categoria": "Camisa",
+                  "preco": 4990,
+                  "imagem": "https://bit.ly/3ctikxq",
+                  "descricao": "Camisa de malha com acabamento fino."
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Deletar Produto",
+        "tags": ["Produtos"],
+        "description": "Rota para excluir um produto inserindo o id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Login": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "senha": {
+            "type": "string"
+          }
+        }
+      },
+      "Users": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "senha": {
+            "type": "string"
+          },
+          "nome_loja": {
+            "type": "string"
+          }
+        }
+      },
+      "Products": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "quantidade": {
+            "type": "number"
+          },
+          "preco": {
+            "type": "number"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "imagem": {
+            "type": "string"
+          },
+          "categoria": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"      
+      }
+    }
+  },
+  "definitions": {}
+}
