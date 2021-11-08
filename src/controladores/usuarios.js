@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const conexao = require("../bancoDeDados/conexao");
-const schemaAtualizacaoDeUsuario = require("../validacoes/schemaAtualizacaoDeUsuario");
+const schemaValidacaoUsuario = require("../validacoes/schemaValidacaoUsuario");
 const validarDisponibilidadeDeEmail = require("../validacoes/validarDisponibilidadeEmail");
 
 const detalharUsuario = async (req, res) => {
@@ -14,7 +14,7 @@ const cadastrarUsuario = async (req, res) => {
     const { nome, email, senha, nome_loja } = req.body;
 
     try {   
-        await schemaAtualizacaoDeUsuario.validate(req.body);
+        await schemaValidacaoUsuario.validate(req.body);
         if (await validarDisponibilidadeDeEmail(email)) {
             return res.status(400).json({
                 mensagem: "email já cadastrado."
@@ -48,7 +48,7 @@ const atualizarUsuario = async (req, res) => {
     const { id } = req.usuario;
 
     try {
-        await schemaAtualizacaoDeUsuario.validate(req.body);
+        await schemaValidacaoUsuario.validate(req.body);
         
         if (await validarDisponibilidadeDeEmail(email)) {
             return res.status(400).json({
