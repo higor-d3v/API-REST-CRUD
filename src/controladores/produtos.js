@@ -1,4 +1,4 @@
-const conexao = require("../conexao");
+const conexao = require("../bancoDeDados/conexao");
 const yup = require("yup");
 const { pt } = require("yup-locales");
 const { setLocale } = yup;
@@ -52,7 +52,7 @@ const obterProdutos = async (req, res) => {
             const query = "SELECT * FROM produtos WHERE usuario_id = $1 AND UPPER(categoria) = $2";
             const { rowCount, rows } = await conexao.query(query, [id, categoria.toUpperCase()]);
     
-            if (rowCount === 0) {
+            if (!rowCount) {
                 return res.status(404).json({
                     mensagem: "Não existem produtos para este usuário nesta categoria."
                 });
@@ -72,7 +72,7 @@ const obterProdutos = async (req, res) => {
         const query = "SELECT * FROM produtos WHERE usuario_id = $1";
         const { rowCount, rows } = await conexao.query(query, [id]);
 
-        if (rowCount === 0) {
+        if (!rowCount) {
             return res.status(404).json({
                 mensagem: "Não existem produtos para este usuário."
             });
@@ -83,7 +83,7 @@ const obterProdutos = async (req, res) => {
         });
     } catch (error) {
         return res.status(400).json({
-            mensagem: "Não foi possível obter os produtos."
+            mensagem: error.message
         });
     }
 };
@@ -96,7 +96,7 @@ const obterProduto = async (req, res) => {
         const query = "SELECT * FROM produtos WHERE id = $1";
         const { rowCount, rows } = await conexao.query(query, [produto_id]);
 
-        if (rowCount === 0) {
+        if (!rowCount) {
             return res.status(404).json({
                 mensagem: "O produto buscado não existe."
             });
@@ -113,7 +113,7 @@ const obterProduto = async (req, res) => {
         });
     } catch (error) {
         return res.status(400).json({
-            mensagem: "Não foi possível obter o produto."
+            mensagem: error.message
         });
     }
 };
@@ -168,7 +168,7 @@ const atualizarProduto = async (req, res) => {
             WHERE id = $6`;
 
             const { rowCount } = await conexao.query(query, [nome, preco, quantidade, descricao, categoria, id]);
-            if (rowCount === 0) {
+            if (!rowCount) {
                 return res.status(400).json({
                     mensagem: "Não foi possível atualizar o produto"
                 });

@@ -1,4 +1,4 @@
-CREATE DATABASE market_cubos;
+CREATE DATABASE mktcubos;
 
 CREATE TABLE usuarios (
     id serial PRIMARY KEY,

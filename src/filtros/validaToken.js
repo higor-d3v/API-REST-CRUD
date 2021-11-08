@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
-const chave = require('../chave_secreta');
-const conexao = require('../conexao');
+const conexao = require('../bancoDeDados/conexao');
 
 const validaToken = async (req, res, next) => {
     const { authorization } = req.headers;
@@ -12,12 +11,12 @@ const validaToken = async (req, res, next) => {
 
     try {
         const token = authorization.replace('Bearer', '').trim();
-        const { id } = jwt.verify(token, chave);
+        const { id } = jwt.verify(token, process.env.JWT_KEY);
 
         const query = `SELECT * FROM usuarios WHERE id = $1`;
         const { rows, rowCount } = await conexao.query(query, [id]);
     
-        if (rowCount === 0) {
+        if (!rowCount) {
             return res.status(404).json({
                 mensagem: 'Não foi possível localizar o usuário.'
             })

@@ -1,9 +1,8 @@
 const bcrypt = require("bcrypt");
-const conexao = require("../conexao");
+const conexao = require("../bancoDeDados/conexao");
 const yup = require("yup");
-const { setLocale } = yup;
 const { pt } = require("yup-locales");
-setLocale(pt);
+yup.setLocale(pt);
 
 
 const detalharUsuario = async (req, res) => {
