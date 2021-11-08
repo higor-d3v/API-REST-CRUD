@@ -1,6 +1,6 @@
 # API-REST-CRUD
 
-## API REST em NODE.js com um CRUD no PostgreSQL de produtos e cadastro e login de usuários e rotas autenticadas via Bearer Token.
+## API REST em Node.js integrada ao PostgreSQL, com CRUD de produtos utilizando autenticação pelo login de usuários cadastrados.
 
 ### Baixe ou clone o repo.
 
