@@ -1,29 +1,12 @@
 const conexao = require("../bancoDeDados/conexao");
-const yup = require("yup");
-const { pt } = require("yup-locales");
-const { setLocale } = yup;
-setLocale(pt);
-
-const validarCamposBody = async (body) => {
-
-    const schema = yup.object().shape({
-        nome: yup.string().required(),
-        quantidade: yup.number().min(1).strict().required(),
-        preco: yup.number().min(1).strict().required(),
-        descricao: yup.string().required(),
-        imagem: yup.string(),
-        categoria: yup.string(),
-    });
-        
-     return await schema.validate(body);  
-};
+const schemaValidacaoProdutos = require("../validacoes/schemaValidacaoProdutos");
 
 const cadastrarProduto = async (req, res) => {
     const { id } = req.usuario;
     const { nome, quantidade, preco, descricao, categoria, imagem } = req.body;
 
     try {
-        await validarCamposBody(req.body);
+        await schemaValidacaoProdutos.validate(req.body);
         const query =
          `INSERT INTO produtos (nome, quantidade, preco, descricao, categoria, imagem, usuario_id)
          VALUES ($1, $2, $3, $4, $5, $6, $7)`;
@@ -124,7 +107,7 @@ const atualizarProduto = async (req, res) => {
     const { nome, quantidade, preco, descricao, categoria, imagem } = req.body;
 
     try {
-        await validarCamposBody(req.body);
+        await schemaValidacaoProdutos.validate(req.body);
 
         let query = "SELECT * FROM produtos WHERE id = $1";
         const { rowCount, rows } = await conexao.query(query, [id]);
