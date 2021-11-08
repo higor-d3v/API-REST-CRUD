@@ -1,9 +1,7 @@
 const bcrypt = require("bcrypt");
 const conexao = require("../bancoDeDados/conexao");
-const yup = require("yup");
-const { pt } = require("yup-locales");
-yup.setLocale(pt);
-
+const schemaAtualizacaoDeUsuario = require("../validacoes/schemaAtualizacaoDeUsuario");
+const validarDisponibilidadeDeEmail = require("../validacoes/validarDisponibilidadeEmail");
 
 const detalharUsuario = async (req, res) => {
     const { usuario } = req;
@@ -12,45 +10,17 @@ const detalharUsuario = async (req, res) => {
     });
 };
 
-const validarCamposBody = async (body) => {
-
-    const schema = yup.object().shape({
-        nome: yup.string().required(),
-        senha: yup.string().required(),
-        email: yup.string().email().required(),
-        nome_loja: yup.string().required()
-        });
-
-    return await schema.validate(body);   
-}; 
-
-const validarDisponibilidadeDeEmail = async (email) => {
-    const query = "SELECT * FROM usuarios WHERE email = $1";
-
-    try {
-        const { rowCount: emailsEncontrados } = await conexao.query(query, [email]);
-       
-        return emailsEncontrados;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-};
-
 const cadastrarUsuario = async (req, res) => {
     const { nome, email, senha, nome_loja } = req.body;
 
-    try {
-
-        await validarCamposBody(req.body);
-
+    try {   
+        await schemaAtualizacaoDeUsuario.validate(req.body);
         if (await validarDisponibilidadeDeEmail(email)) {
             return res.status(400).json({
                 mensagem: "email já cadastrado."
              });
         }
         
-
         const hash = await bcrypt.hash(senha, 10);
         let query = 
         `INSERT INTO usuarios (nome, email, senha, nome_loja)
@@ -78,8 +48,7 @@ const atualizarUsuario = async (req, res) => {
     const { id } = req.usuario;
 
     try {
-
-        await validarCamposBody(req.body);
+        await schemaAtualizacaoDeUsuario.validate(req.body);
         
         if (await validarDisponibilidadeDeEmail(email)) {
             return res.status(400).json({
