@@ -1,12 +1,13 @@
 const conexao = require("../bancoDeDados/conexao");
-const schemaValidacaoProdutos = require("../validacoes/schemaValidacaoProdutos");
+const schemaCadastroProduto = require("../validacoes/schemaCadastroProduto");
+const schemaAtualizacaoProduto = require("../validacoes/schemaAtualizacaoProduto");
 
 const cadastrarProduto = async (req, res) => {
     const { id } = req.usuario;
     const { nome, quantidade, preco, descricao, categoria, imagem } = req.body;
 
     try {
-        await schemaValidacaoProdutos.validate(req.body);
+        await schemaCadastroProduto.validate(req.body);
         const query =
          `INSERT INTO produtos (nome, quantidade, preco, descricao, categoria, imagem, usuario_id)
          VALUES ($1, $2, $3, $4, $5, $6, $7)`;
@@ -107,7 +108,7 @@ const atualizarProduto = async (req, res) => {
     const { nome, quantidade, preco, descricao, categoria, imagem } = req.body;
 
     try {
-        await schemaValidacaoProdutos.validate(req.body);
+        await schemaAtualizacaoProduto.validate(req.body);
 
         let query = "SELECT * FROM produtos WHERE id = $1";
         const { rowCount, rows } = await conexao.query(query, [id]);
