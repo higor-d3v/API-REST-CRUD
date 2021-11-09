@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const conexao = require('../bancoDeDados/conexao');
+const knex = require('../bancoDeDados/conexao');
 
 const validaToken = async (req, res, next) => {
     const { authorization } = req.headers;
@@ -13,23 +13,22 @@ const validaToken = async (req, res, next) => {
         const token = authorization.replace('Bearer', '').trim();
         const { id } = jwt.verify(token, process.env.JWT_KEY);
 
-        const query = `SELECT * FROM usuarios WHERE id = $1`;
-        const { rows, rowCount } = await conexao.query(query, [id]);
-    
-        if (!rowCount) {
+        const usuario = await knex("usuarios").where({id}).first();
+
+        if (!usuario) {
             return res.status(404).json({
                 mensagem: 'Não foi possível localizar o usuário.'
             })
         }
 
-        const { nome, email, nome_loja } = rows[0];
+        const { nome, email, nome_loja } = usuario;
         const dadosUsuario = {id, nome, email, nome_loja};
         req.usuario = {...dadosUsuario};
         next();
 
     } catch (error) {
         return res.status(401).json({
-            mensagem: 'A validação de token falhou.'
+            mensagem: error.message
         })
     }
     

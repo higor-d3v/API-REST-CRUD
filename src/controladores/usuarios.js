@@ -1,34 +1,26 @@
-const bcrypt = require("bcrypt");
-const conexao = require("../bancoDeDados/conexao");
-const schemaValidacaoUsuario = require("../validacoes/schemaValidacaoUsuario");
+const knex = require("../bancoDeDados/conexao");
+const schemaCadastroUsuario = require("../validacoes/schemaCadastroUsuario");
+const schemaAtualizacaoUsuario = require("../validacoes/schemaAtualizacaoUsuario");
 const validarDisponibilidadeDeEmail = require("../validacoes/validarDisponibilidadeEmail");
-
-const detalharUsuario = async (req, res) => {
-    const { usuario } = req;
-    res.status(200).json({
-        usuario: usuario
-    });
-};
+const criptografarSenha = require("../utilidades/criptografarSenha");
 
 const cadastrarUsuario = async (req, res) => {
     const { nome, email, senha, nome_loja } = req.body;
 
     try {   
-        await schemaValidacaoUsuario.validate(req.body);
+        await schemaCadastroUsuario.validate(req.body);
         if (await validarDisponibilidadeDeEmail(email)) {
             return res.status(400).json({
                 mensagem: "email já cadastrado."
              });
         }
         
-        const hash = await bcrypt.hash(senha, 10);
-        let query = 
-        `INSERT INTO usuarios (nome, email, senha, nome_loja)
-        VALUES($1, $2, $3, $4)`;
+        const hash = criptografarSenha(senha);
+        const { rowCount: cadastroDoUsuario} = await knex("usuarios")
+            .insert({nome, email, senha: hash, nome_loja});
 
-        const { rowCount } = await conexao.query(query, [nome, email, hash, nome_loja]);
-
-        if (!rowCount) {
+        if (!cadastroDoUsuario) {
+            console.log(!cadastroDoUsuario)
             return res.status(400).json({
                 mensagem: "Não foi possível cadastrar o usuário."
             });
@@ -43,30 +35,29 @@ const cadastrarUsuario = async (req, res) => {
     }
 };
 
+const detalharUsuario = async (req, res) => {
+    res.status(200).json({usuario: req.usuario});
+};
+
+
 const atualizarUsuario = async (req, res) => {
     const { nome, email, senha, nome_loja } = req.body;
     const { id } = req.usuario;
 
     try {
-        await schemaValidacaoUsuario.validate(req.body);
+        await schemaAtualizacaoUsuario.validate(req.body);
         
-        if (await validarDisponibilidadeDeEmail(email)) {
+        if (email && await validarDisponibilidadeDeEmail(email)) {
             return res.status(400).json({
                 mensagem: "email já cadastrado."
              });
         }
     
-        const hash = await bcrypt.hash(senha, 10);
-        const query = 
-        `UPDATE usuarios
-        SET nome = $1,
-        email = $2,
-        senha = $3,
-        nome_loja = $4
-        WHERE id = $5`;
+        const hash = senha ? await criptografarSenha(senha): undefined;
         
-        const camposDoBodyMaisId = [nome, email, hash, nome_loja, id];
-        const { rowCount: atualizacaoDeUsuario } = await conexao.query(query, camposDoBodyMaisId);
+        const atualizacaoDeUsuario = await knex("usuarios")
+            .where({id})
+            .update({email, senha: hash, nome, nome_loja});
 
         if (!atualizacaoDeUsuario) {
             return res.status(400).json({
@@ -75,7 +66,6 @@ const atualizarUsuario = async (req, res) => {
         }
 
         return res.status(204).json();
-
     } catch (error) {
         return res.status(400).json({
             mensagem: error.message

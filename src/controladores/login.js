@@ -1,29 +1,24 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const conexao = require("../bancoDeDados/conexao");
+const knex = require("../bancoDeDados/conexao");
+const schemaLogin = require("../validacoes/schemaLogin");
 
 const login = async (req, res) => {
     const { senha, email } = req.body;
-    if (!senha || !email) {
-        return res.status(400).json({
-            mensagem: "Por favor insira os campos Obrigatórios"
-        });
-    }
-    try {
-        const query = "SELECT * FROM usuarios WHERE email = $1";
-        const { rows, rowCount } = await conexao.query(query, [email]);
 
-        if (!rowCount) {
+    try {
+        await schemaLogin.validate(req.body);
+        const usuario = await knex("usuarios").where({email}).first();
+        if (!usuario) {
             return res.status(400).json({
-                mensagem: "Email ou senha inválidos"
+                mensagem: "Email ou senha inválidos."
             });
         }
-        const usuario = rows[0];
         const validarSenha = await bcrypt.compare(senha, usuario.senha);
 
         if (!validarSenha) {
             return res.status(400).json({
-                mensagem: "Usuário e/ou senha inválido(s)."
+                mensagem: "Email ou senha inválidos."
             });
         }
 

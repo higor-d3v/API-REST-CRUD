@@ -1,10 +1,8 @@
-const conexao = require("../bancoDeDados/conexao");
+const knex = require("../bancoDeDados/conexao");
 
 const validarDisponibilidadeDeEmail = async (email) => {
-    const query = "SELECT * FROM usuarios WHERE email = $1";
-    const { rowCount: emailsEncontrados } = await conexao.query(query, [email]);
-    
-    return emailsEncontrados; 
+    const emailsEncontrados = await knex("usuarios").where({email});
+    return emailsEncontrados.length; 
 };
 
 module.exports = validarDisponibilidadeDeEmail;
