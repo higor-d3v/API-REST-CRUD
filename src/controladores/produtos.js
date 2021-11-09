@@ -44,12 +44,6 @@ const obterProdutos = async (req, res) => {
                 .where({usuario_id: id})
                 .andWhere({categoria});
 
-            if (!produtos.length) {
-                return res.status(404).json({
-                    mensagem: "Não existem produtos nesta categoria."
-                });
-            }
-
             return res.status(200).json({produtos});
         }
 
