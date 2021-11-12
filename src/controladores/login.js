@@ -29,9 +29,9 @@ const login = async (req, res) => {
                 { expiresIn: "24h" }
             );
 
-        return res.status(201).json({token});
+        return res.status(200).json({token});
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             mensagem: error.message
         });
     }
