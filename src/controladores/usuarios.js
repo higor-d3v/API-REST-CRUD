@@ -36,9 +36,9 @@ const cadastrarUsuario = async (req, res) => {
 };
 
 const detalharUsuario = async (req, res) => {
-    res.status(200).json({req.usuario});
+    const { usuario } = req;
+    res.status(200).json({usuario});
 };
-
 
 const atualizarUsuario = async (req, res) => {
     const { nome, email, senha, nome_loja } = req.body;
