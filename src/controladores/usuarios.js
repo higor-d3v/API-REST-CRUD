@@ -15,7 +15,7 @@ const cadastrarUsuario = async (req, res) => {
              });
         }
         
-        const hash = criptografarSenha(senha);
+        const hash = await criptografarSenha(senha);
         const { rowCount: cadastroDoUsuario} = await knex("usuarios")
             .insert({nome, email, senha: hash, nome_loja});
 
