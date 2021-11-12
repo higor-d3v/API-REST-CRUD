@@ -16,7 +16,7 @@ const validaToken = async (req, res, next) => {
         const usuario = await knex("usuarios").where({id}).first();
 
         if (!usuario) {
-            return res.status(404).json({
+            return res.status(401).json({
                 mensagem: 'Não foi possível localizar o usuário.'
             })
         }
@@ -27,7 +27,7 @@ const validaToken = async (req, res, next) => {
         next();
 
     } catch (error) {
-        return res.status(401).json({
+        return res.status(500).json({
             mensagem: error.message
         })
     }

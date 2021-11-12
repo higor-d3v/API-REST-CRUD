@@ -3,61 +3,46 @@ const schemaCadastroProduto = require("../validacoes/schemaCadastroProduto");
 const schemaAtualizacaoProduto = require("../validacoes/schemaAtualizacaoProduto");
 
 const cadastrarProduto = async (req, res) => {
-    const { id } = req.usuario;
-    const { nome, quantidade, preco, descricao, categoria, imagem } = req.body;
+    const { id: usuario_id } = req.usuario;
+    let { body } = req;
+    body = {...body, usuario_id};
 
     try {
-        await schemaCadastroProduto.validate(req.body);
+        await schemaCadastroProduto.validate(body);
         
-        const { rowCount: cadastroDoProduto } = await knex("produtos")
-            .insert({
-                usuario_id: id,
-                nome,
-                quantidade,
-                preco,
-                descricao,
-                categoria,
-                imagem
-                });
+        const { rowCount } = await knex("produtos").insert(body);
 
-        if (!cadastroDoProduto) {
-            return res.status(400).json({
-                mensagem: "'Não foi possível cadastrar o produto.'"
+        if (!rowCount) {
+            return res.status(500).json({
+                mensagem: "Não foi possível cadastrar o produto."
             });
         }
         return res.status(201).json();
 
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             mensagem: error.message
         });
     }
 };
 
 const obterProdutos = async (req, res) => {
-    const { id } = req.usuario;
+    const { id: usuario_id } = req.usuario;
     const { categoria } = req.query;
 
     try {
         if (categoria) {
             const produtos = await knex("produtos")
-                .where({usuario_id: id})
+                .where({usuario_id})
                 .andWhere({categoria});
 
             return res.status(200).json({produtos});
         }
 
-        const produtos = await knex("produtos").where({usuario_id: id});
-        
-        if (!produtos.length) {
-            return res.status(404).json({
-                mensagem: "Não existem produtos para este usuário."
-            });
-        }
-
+        const produtos = await knex("produtos").where({usuario_id});
         return res.status(200).json({produtos});
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             mensagem: error.message
         });
     }
@@ -81,7 +66,7 @@ const obterProduto = async (req, res) => {
 
         return res.status(200).json({produto});
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             mensagem: error.message
         });
     }
@@ -90,7 +75,6 @@ const obterProduto = async (req, res) => {
 const atualizarProduto = async (req, res) => {
     const { id } = req.params;
     const { id: usuario_id } = req.usuario;
-    const { nome, quantidade, preco, descricao, categoria, imagem } = req.body;
 
     try {
         await schemaAtualizacaoProduto.validate(req.body);
@@ -108,17 +92,10 @@ const atualizarProduto = async (req, res) => {
 
         const atualizacaoProduto = await knex("produtos")
             .where({id})
-            .update({
-                nome,
-                preco,
-                quantidade,
-                descricao,
-                categoria,
-                imagem
-            });
+            .update(req.body);
 
         if (!atualizacaoProduto) {
-                return res.status(400).json({
+                return res.status(500).json({
                     mensagem: "Não foi possível atualizar o produto"
                 });
             }
@@ -126,7 +103,7 @@ const atualizarProduto = async (req, res) => {
         return res.status(204).json();
         
     } catch(error) {
-        return res.status(400).json({
+        return res.status(500).json({
             mensagem: error.message
         });
     }
@@ -143,7 +120,7 @@ const excluirProduto = async (req, res) => {
         .del()
         console.log(delecaoProduto)
         if (!delecaoProduto) {
-            return res.status(400).json({
+            return res.status(500).json({
                 mensagem: "Não foi possível excluir o produto."
             });
         }
@@ -151,7 +128,7 @@ const excluirProduto = async (req, res) => {
         return res.status(204).json();
 
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             mensagem: error.message
         });
     }
