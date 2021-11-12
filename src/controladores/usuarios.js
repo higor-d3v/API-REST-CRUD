@@ -21,23 +21,22 @@ const cadastrarUsuario = async (req, res) => {
 
         if (!cadastroDoUsuario) {
             console.log(!cadastroDoUsuario)
-            return res.status(400).json({
+            return res.status(500).json({
                 mensagem: "Não foi possível cadastrar o usuário."
             });
         }
 
-        return res.status(204).json();
+        return res.status(201).json();
 
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             mensagem: error.message
         });
     }
 };
 
 const detalharUsuario = async (req, res) => {
-    const { usuario } = req;
-    res.status(200).json({usuario});
+    res.status(200).json(req.usuario);
 };
 
 const atualizarUsuario = async (req, res) => {
@@ -60,14 +59,14 @@ const atualizarUsuario = async (req, res) => {
             .update({email, senha: hash, nome, nome_loja});
 
         if (!atualizacaoDeUsuario) {
-            return res.status(400).json({
+            return res.status(500).json({
                 mensagem: "Não foi possível atualizar o usuário."
             });
         }
 
         return res.status(204).json();
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             mensagem: error.message
         });
     }
