@@ -118,7 +118,6 @@ const excluirProduto = async (req, res) => {
         .where({id})
         .andWhere({usuario_id})
         .del()
-        console.log(delecaoProduto)
         if (!delecaoProduto) {
             return res.status(500).json({
                 mensagem: "Não foi possível excluir o produto."

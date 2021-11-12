@@ -20,7 +20,6 @@ const cadastrarUsuario = async (req, res) => {
             .insert({nome, email, senha: hash, nome_loja});
 
         if (!cadastroDoUsuario) {
-            console.log(!cadastroDoUsuario)
             return res.status(500).json({
                 mensagem: "Não foi possível cadastrar o usuário."
             });
