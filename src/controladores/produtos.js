@@ -8,6 +8,7 @@ const cadastrarProduto = async (req, res) => {
 
     try {
         await schemaCadastroProduto.validate(req.body);
+        
         const { rowCount: cadastroDoProduto } = await knex("produtos")
             .insert({
                 usuario_id: id,
@@ -42,12 +43,6 @@ const obterProdutos = async (req, res) => {
             const produtos = await knex("produtos")
                 .where({usuario_id: id})
                 .andWhere({categoria});
-
-            if (!produtos.length) {
-                return res.status(404).json({
-                    mensagem: "Não existem produtos nesta categoria."
-                });
-            }
 
             return res.status(200).json({produtos});
         }
@@ -111,21 +106,16 @@ const atualizarProduto = async (req, res) => {
             });
         }
 
-        if (produto.usuario_id !== usuario_id) {
-            return res.status(403).json({
-                mensagem: "Este usuário não tem acesso ao produto."
-            });
-        }
         const atualizacaoProduto = await knex("produtos")
-        .where({id})
-        .update({
-            nome,
-            preco,
-            quantidade,
-            descricao,
-            categoria,
-            imagem
-        });
+            .where({id})
+            .update({
+                nome,
+                preco,
+                quantidade,
+                descricao,
+                categoria,
+                imagem
+            });
 
         if (!atualizacaoProduto) {
                 return res.status(400).json({
